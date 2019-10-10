@@ -14,8 +14,8 @@
           cols="8"
             sm="8"
             md="4">
-            <h1 id="title">DEMO AWS</h1>
-            <span id="subTitle">Somos um serviço de daljwdj awldawldi alwdj lawid jlawdawdjwald a</span>
+            <h1 id="title">MyLA</h1>
+            <span id="subTitle">My Lecter Abstracter é um sistema que disponibiliza conteúdo das suas palestras em qualquer lugar</span>
           </v-col>
           <v-col
             cols="8"
@@ -95,7 +95,8 @@ import axios from 'axios'
           this.logar()
       },
       logar(){
-          localStorage.setItem("urlBase",'http://3.16.109.167:3000/')
+          localStorage.setItem("urlBase",'http://3.16.109.167:3000')
+          localStorage.setItem("appName",'DEMO-AWS')
           axios.put(localStorage.getItem('urlBase')+'/user',this.usuario).then(res => {
             if(res.status == 200){
               localStorage.setItem("user_id", res.data.data._id) 

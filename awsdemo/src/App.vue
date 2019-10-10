@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <v-app-bar app v-if="currentPage != 'login'">
-      <v-toolbar-title class="headline text-uppercase">
-        <span>DEMO APP</span>
-        <span class="font-weight-light">DEMO APP</span>
+      <v-toolbar-title class="headline">
+        <span>MyLA</span>
+        <span class="font-weight-light text-uppercase"> My Lecter Abstracter  </span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn text @click="sair()"> sair </v-btn>

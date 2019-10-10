@@ -16,39 +16,12 @@
             <p>Descrição: {{evento.description}} </p>
             <v-spacer></v-spacer>
             <v-btn @click="toogleCadastrarPalestra(evento)" class="mr-2" text> Adicionar palestras </v-btn>
-            <v-btn @click="toogleVerPalestras(evento.palestras)" text> Ver palestras </v-btn>
+            <v-btn @click="toogleVerPalestras(evento._id)" text> Ver palestras </v-btn>
           </v-flex>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
-   <!-- <v-data-table
-      :headers="headers"
-      :items="eventos"
-      item-key="name"
-      :expand="expand"
-    >
-      <template v-slot:item="props">
-        <tr @click="props.expanded = !props.expanded">
-          <td>
-            <p>{{props.item.name}} </p>
-          </td>
-        <td>
-          <v-icon
-              small
-              class="mr-2"
-              @click="toogleCadastrarPalestra(item)">
-              add
-            </v-icon>
-          </td>
-        </tr>
-    </template>
-      <template v-slot:expand="props">
-        <v-card flat>
-          <v-card-text>Peek-a-boo!</v-card-text>
-        </v-card>
-      </template>
-    </v-data-table> -->
-    
+
     <ModalCadastroEvento
     v-if="cadastrarEvento"
     :visible="cadastrarEvento"
@@ -112,8 +85,6 @@ export default {
   methods: {
     colunizar(item){
       var itens = item.palestras
-      console.log(item)
-      console.log(itens)
       let columns = []
       let mid = Math.ceil(itens.length / 2)
       for (let col = 0; col < 2; col++) {
@@ -124,9 +95,9 @@ export default {
     toogleCadastrarEvento() {
         this.cadastrarEvento = !this.cadastrarEvento
     },
-    toogleVerPalestras(items) {
-        if(items!=null)
-          this.itemsPalestras = items
+    toogleVerPalestras(evento) {
+        if(evento!=null)
+          this.loadPalestras(evento)
         this.verPalestras = !this.verPalestras
     },
     toogleCadastrarPalestra(item) {
@@ -137,24 +108,13 @@ export default {
     loadTable(){
       axios.get(localStorage.getItem('urlBase')+'/event/user/'+localStorage.getItem('user_id')).then( res => {
         this.eventos = res.data.data
-        this.eventos.forEach(e => {
-          this.loadPalestras(e)
-        });
       })
     },
-    loadPalestras(item){
-      axios.get(localStorage.getItem('urlBase')+'/lecture/event/'+item._id).then(res => {
-        this.eventos.forEach(e => {
-          try {
-            if(res.data.data[0] != null)
-              if(res.data.data[0].event_id){
-                e.palestras = res.data.data
-              }
-          } catch (error) {
-            console.log(error)
-          }
-        });
-      }) 
+    async loadPalestras(item){
+       await axios.get(localStorage.getItem('urlBase')+'/lecture/event/'+item)
+       .then(res => {
+        this.itemsPalestras = res.data.data
+      })
     }
   }
 };  

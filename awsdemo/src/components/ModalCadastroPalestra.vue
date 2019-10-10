@@ -15,7 +15,7 @@
                     <v-card-text>
                         <v-text-field label="Nome da Palestra" v-model="palestra.title"></v-text-field>
                         <v-text-field label="Descrição" v-model="palestra.deion"></v-text-field>
-                        <v-combobox v-model="speaker.name" :items="palestrantes" label="Palestrante"></v-combobox>
+                        <v-combobox v-model="nome"  :items="nomes" label="Palestrante"> </v-combobox>
                         <v-spacer></v-spacer>
                         <v-btn @click="toogleCadastroParticipante()">Cadastrar palestrante</v-btn>
                         <v-date-picker
@@ -55,15 +55,17 @@ export default {
 },
     data: () => {
     return {
-        name:"asd",
+        nome:'',
         palestrantes:[],
         cadastroPalestrante: false,
         speaker:{},
+        nomes:[],
         palestra:{}
     };
     },
     mounted() {
         document.addEventListener("keyup", this.keyboardEvent);
+        this.getPalestrantes()
     },
   
     created(){
@@ -75,10 +77,17 @@ export default {
     },
 
     methods: {
+        getPalestrantes(){
+            axios.get(localStorage.getItem('urlBase')+'/speaker').then(res => {
+                this.palestrantes = res.data.data
+                this.palestrantes.forEach(r => {
+                    this.nomes.push(r.name)
+                })
+            })
+        },
         novoPalestrante(arg){
             this.speaker = arg
             this.speaker.name = arg.name
-            console.log(this.speaker)
         },
         toogleCadastroParticipante(){
             this.cadastroPalestrante = !this.cadastroPalestrante
@@ -90,7 +99,11 @@ export default {
                 this.cadastrar()
         },
         cadastrar(){
-            this.palestra.speaker_id = this.speaker._id
+            this.palestrantes.forEach(r => {
+                if(r.name == this.nome)
+                    this.palestra.speaker_id = r._id
+            })
+            this.palestra.event_id = this.evento
             axios.post(localStorage.getItem('urlBase')+'/lecture',this.palestra).then( res => {
                 this.reload()
                 this.toogleVisible()

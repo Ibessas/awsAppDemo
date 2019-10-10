@@ -6,14 +6,13 @@
         transition="dialog-bottom-transition"
         >
             <v-card v-for="palestra in palestras" v-bind:key="palestra._id">
-                <v-flex>
+                <v-flex mt-2>
                     <v-card-title>
                         {{palestra.title}}
                     </v-card-title>
                     <v-card-text>
-                        <p>Descrição: {{palestra.description}}</p>
                         <p>Status:  {{palestra.status}}</p>
-                        <p>Palestrante: {{palestrante()}} </p>
+                        <p>Palestrante: {{palestra.speaker_id.name}} </p>
                         <v-btn @click="redirect(palestra._id)">Ver</v-btn>
                     </v-card-text>
                 </v-flex>
@@ -36,6 +35,7 @@ palestras: Array
 },
     data: () => {
     return {
+        palestrantes:[]
     };
     },
     mounted() {
@@ -51,9 +51,6 @@ palestras: Array
     },
 
     methods: {
-        palestrante(){
-            
-        },
         redirect(id){
             router.push('/palestra/'+id)
         },

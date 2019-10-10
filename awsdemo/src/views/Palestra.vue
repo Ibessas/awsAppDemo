@@ -3,21 +3,25 @@
     <v-card>
       <v-card-title>
         <h2>{{palestra.title}}</h2>
-        <v-chip class="ml-2" :text-color="status.textColor" :color="status.color">{{status.text}}</v-chip>
+         <v-col class="d-flex" cols="8" sm="2">
+          <v-select class="ml-3" :items="stats" v-model="status"></v-select>
+         </v-col>
         <v-spacer></v-spacer>
         <v-btn to="/dashboard" text>Voltar</v-btn>
       </v-card-title>
       <v-card-text>
         <v-flex ma-5>
-          <audio controls>
-            <!-- <source src="palestra.file_id.url" type="audio/mpeg"> -->
-            Your browser does not support the audio element.
-          </audio>
           <v-card>
-            <v-card-text> </v-card-text>
+            <v-card-title>Transcrição: </v-card-title>
+            <v-card-text v-if="palestra.transcription_id != null"> {{palestra.transcription_id.body | capitalize}} </v-card-text>
           </v-card>
-          <input type="file" name="resume" @change="uploadResume" class="form-control-file"> 
-          <p style="text-color:green"  v-if="loading"> Carregando... </p> 
+          <input type="file" name="resume" @change="uploadResume" class="form-control-file mt-2"> 
+          <v-spacer></v-spacer>
+          <audio controls v-if="palestra.file_id != null">
+            <source :src="palestra.file_id.url" type="audio/mpeg">
+            Seu navegador não suporta o elemento de audio.
+          </audio>
+          <p v-if="loading"> Carregando... </p> 
           <p v-if="transcrevendo"> Transcrevendo... </p>
         </v-flex>
       </v-card-text>
@@ -43,10 +47,28 @@ export default {
         transcrevendo: false,
         concluido: false,
         palestra: {},
+        stats: [
+          {id:'NOT_STARTED', text:'Não foi iniciada'},
+          {id:'STARTED', text:'Iniciada'},
+          {id:'CANCELED', text:'Cancelada'},
+          {id:'FINISHED', text:'Terminada'}
+        ]
+    }
+  },
+  filters: {
+    capitalize: function (value) {
+      if (!value) return ''
+      value = value.toString()
+      return value.charAt(0).toUpperCase() + value.slice(1)
     }
   },
   mounted(){
 
+  },
+  watch: {
+    status: (value => {
+      axios.put(localStorage.getItem('urlBase')+'/lecture/status',{id:router.history.current.params.id, status:value.id})
+    })
   },
   created() {
     this.loadPalestra()
@@ -55,15 +77,17 @@ export default {
     loadPalestra(){
     axios.get(localStorage.getItem('urlBase')+'/lecture/'+router.history.current.params.id).then( res => {
       this.palestra = res.data.data
+      this.stats.forEach( r => {
+        if(r.id == this.palestra.status)
+          this.status = r.text
+      })
       if(this.palestra.fileId != null){
         this.loading = false
         if(this.palestra.transcription_id != null)
           this.transcrevendo = false
         else
           this.transcrevendo = true
-      }
-      else 
-        this.loading = true
+      } 
     })
     
     },
@@ -128,7 +152,6 @@ export default {
       // )
 
         // Async request to upload resume from Laravel backend
-        console.log(this.file)
         this.loading = true
         axios.post(localStorage.getItem('urlBase')+`/file/`, aux).then(req => {
           this.loading=false
