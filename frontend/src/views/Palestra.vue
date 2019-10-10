@@ -15,12 +15,12 @@
             <v-card-title>Transcrição: </v-card-title>
             <v-card-text v-if="palestra.transcription_id != null"> {{palestra.transcription_id.body | capitalize}} </v-card-text>
           </v-card>
-          <input type="file" name="resume" @change="uploadResume" class="form-control-file mt-2"> 
-          <v-spacer></v-spacer>
-          <audio controls v-if="palestra.file_id != null">
+          <audio class="mt-2" controls v-if="palestra.file_id != null">
             <source :src="palestra.file_id.url" type="audio/mpeg">
             Seu navegador não suporta o elemento de audio.
           </audio>
+          <v-spacer></v-spacer>
+          <input type="file" name="resume" @change="uploadResume" class="form-control-file"> 
           <p v-if="loading"> Carregando... </p> 
           <p v-if="transcrevendo"> Transcrevendo... </p>
         </v-flex>
